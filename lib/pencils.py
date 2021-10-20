@@ -18,7 +18,10 @@ class Pencil:
     is_sharp: bool
     
     
-def parse_pencils(pencils: list):
+def parse_pencils(pencils: tuple):
+
+    if type(pencils) is not tuple:
+        raise ValueError('"Карандаши" должны быть в кортеже.')
 
     pencil_with_gap = pencil_width + pencil_gap
     full_pencils_width = pencil_with_gap * len(pencils) - pencil_gap
@@ -35,20 +38,25 @@ def parse_pencils(pencils: list):
 
         color, length, is_sharp = pencil
 
+        if type(pencil) is not tuple:
+            raise ValueError('Параметры должны быть в кортеже.')
+
         if type(color) is not str:
             raise ValueError('Параметр "цвет" должен быть строкой.')
+
         if type(length) not in [float, int]:
             raise ValueError('Параметр "длина" должен быть числом.')
+
         if type(is_sharp) is not bool:
             raise ValueError('Параметр "острый" должен быть логическим.')
 
+        if length < pencil_min_length:
+            raise ValueError('Слишком короткий карандаш в наборе.')
+        if length > pencil_max_length:
+            raise ValueError('Слишком длинный карандаш в наборе.')
+
         length *= pencil_cm
         color = translate_color(color)
-
-        if length < pencil_min_height:
-            raise ValueError('Слишком короткий карандаш в наборе.')
-        if length > pencil_height:
-            raise ValueError('Слишком длинный карандаш в наборе.')
 
 
         x1 = int(left_shift)
