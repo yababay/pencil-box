@@ -18,10 +18,10 @@ class Pencil:
     is_sharp: bool
     
     
-def parse_pencils(pencils: tuple):
+def parse_pencils(pencils: list):
 
-    if type(pencils) is not tuple:
-        raise ValueError('"Карандаши" должны быть в кортеже.')
+    if type(pencils) is not list:
+        raise ValueError('"Карандаши" должны быть в списке (list).')
 
     pencil_with_gap = pencil_width + pencil_gap
     full_pencils_width = pencil_with_gap * len(pencils) - pencil_gap
