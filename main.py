@@ -19,7 +19,7 @@ if __name__ == "__main__":
     p4 = 'непонятный', 20.0, False
     p5 = 'зеленый',    15.1, True
 
-    pencils = (p1, p2, p3, p4, p5)
+    pencils = [p1, p2, p3, p4, p5]
 
     try:
 
