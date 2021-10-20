@@ -1,46 +1,62 @@
-from . settings import *
 from dataclasses import dataclass
-
-global y_top, y_bottom
-
-y_top = pencil_padding
-y_bottom = y_top + pencil_height
+from . settings import *
+from . colors import translate_color
 
 
 @dataclass
 class Points:
     x1: int
     x2: int
-    y1: int = y_top
-    y2: int = y_bottom
+    y2: int
+    y1: int = pencil_padding
+
 
 @dataclass
 class Pencil:
     points: Points
     fill: str
-    length: float
     is_sharp: bool
     
-class PencilBox:
+    
+def parse_pencils(pencils: list):
 
-    def __init__(self, pencils: list):
-        full_pencils_width = (pencil_width + pencil_gap) * \
-            len(pencils) - pencil_gap
-        if full_pencils_width > canvas_width:
-            raise ValueError('Карандашей слишком много '
-                    'или они слишком толстые.')
-        self.left_shift = canvas_middle - int(full_pencils_width / 2)
-        self.pencils = list(map(lambda pencil: Pencil(self.get_next_points(), \
-                *pencil), pencils))
+    pencil_with_gap = pencil_width + pencil_gap
+    full_pencils_width = pencil_with_gap * len(pencils) - pencil_gap
 
-    def get_next_points(self):
-        x1 = self.left_shift
-        x2 = x1 + pencil_width
-        points = Points(x1, x2)
-        self.left_shift = x2 + pencil_gap
-        return points
+    if full_pencils_width > canvas_width:
+        raise ValueError('Карандашей слишком много или они слишком толстые.')
 
-    def get_pencils(self):
-        return tuple(self.pencils)
+    """ Левая точка отрисовки карандашей """
+    left_shift = int(canvas_width / 2 - full_pencils_width / 2)
+
+    parsed = []
+
+    for pencil in pencils:
+
+        color, length, is_sharp = pencil
+
+        if type(color) is not str:
+            raise ValueError('Параметр "цвет" должен быть строкой.')
+        if type(length) not in [float, int]:
+            raise ValueError('Параметр "длина" должен быть числом.')
+        if type(is_sharp) is not bool:
+            raise ValueError('Параметр "острый" должен быть логическим.')
+
+        length *= pencil_cm
+        color = translate_color(color)
+
+        if length < pencil_min_height:
+            raise ValueError('Слишком короткий карандаш в наборе.')
+        if length > pencil_height:
+            raise ValueError('Слишком длинный карандаш в наборе.')
 
 
+        x1 = int(left_shift)
+        x2 = int(x1 + pencil_width)
+        y2 = int(pencil_padding + length)
+        left_shift = x2 + pencil_gap
+        points = Points(x1, x2, y2)
+        
+        parsed.append(Pencil(points, color, is_sharp))
+
+    return tuple(parsed)
